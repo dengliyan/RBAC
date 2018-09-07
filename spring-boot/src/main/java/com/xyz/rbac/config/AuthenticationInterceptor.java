@@ -55,10 +55,12 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             //读取cookies或request header中的值
             String paramToken=httpServletRequest.getParameter(User.COOK_NAME_TOKEN);
             String cookieToken=getCookieValue(httpServletRequest,User.COOK_NAME_TOKEN);
-            if(StringUtils.isEmpty(paramToken)&&StringUtils.isEmpty(cookieToken)) {
+            String headerToken=httpServletRequest.getHeader(User.COOK_NAME_TOKEN);
+
+            if(StringUtils.isEmpty(paramToken)&&StringUtils.isEmpty(cookieToken)&&StringUtils.isEmpty(headerToken)) {
                 throw new BusinessException(Result.USER_NOT_LOGIN);//无token，则认为失效
             }
-            String token=!(StringUtils.isEmpty(paramToken))?paramToken:cookieToken;
+            String token=!(StringUtils.isEmpty(paramToken))?paramToken:!(StringUtils.isEmpty(headerToken))?headerToken:cookieToken;
             //读取当前用户的信息
             //根据token读取用户的缓存
             User user=redisService.get(UserKey.TOKEN,token,User.class);
