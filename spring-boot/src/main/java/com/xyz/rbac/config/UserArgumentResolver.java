@@ -1,6 +1,6 @@
 package com.xyz.rbac.config;
 
-import com.xyz.blog.data.model.User;
+import com.xyz.rbac.data.domain.User;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.support.WebDataBinderFactory;

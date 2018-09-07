@@ -7,10 +7,12 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="github" />
+        <module name="rbac" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="github" target="1.8" />
+      <module name="rbac" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

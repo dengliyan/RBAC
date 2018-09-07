@@ -13,7 +13,7 @@ public class LoginUser {
     @IsLoginName
     private String name;
 
-    @NotEmpty
+    @NotEmpty(message = "密码不能为空")
     private String password;
 
 

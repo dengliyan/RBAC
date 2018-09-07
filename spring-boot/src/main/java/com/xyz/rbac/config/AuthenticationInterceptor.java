@@ -62,7 +62,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             //读取当前用户的信息
             //根据token读取用户的缓存
             User user=redisService.get(UserKey.TOKEN,token,User.class);
-            if(user==null) {
+            if(user==null||!user.getToken().equals(token)) {
                 throw new BusinessException(Result.USER_TOKEN_ILLEGAL);//无token，则认为失效
             }
             redisService.set(UserKey.TOKEN,token,user);//更新过期时间

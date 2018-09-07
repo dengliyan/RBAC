@@ -15,12 +15,13 @@ public class User {
 
     private Integer id;
     private String name;
-    private String loginEmail;
-    private String loginPassword;
+    private String email;
+    private String password;
     private String salt;
-    private String userMobile;
+    private String mobile;
     private Date createDate;
     private Date lastLoginDate;
     private String lastLoignIp;
     private Boolean isValid;
+    private String token;
 }

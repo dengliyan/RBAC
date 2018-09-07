@@ -92,7 +92,17 @@ public class RedisService {
             }
         }
     }
-
+    public <T> Long delete(CacheKeyPrefix prefix, String key) {
+        Jedis jedis = null;
+        try {
+            jedis =  jedisPool.getResource();
+            return  jedis.del(prefix.getKey(key));
+        }finally {
+            if (jedis != null) {//关闭连接池
+                jedis.close();
+            }
+        }
+    }
 
     private <T>  T stringToBean(String value,Class<T> classz) {
         if (value == null || value.length() == 0 || classz == null) {

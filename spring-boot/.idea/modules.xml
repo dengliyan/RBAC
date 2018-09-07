@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/github.iml" filepath="$PROJECT_DIR$/github.iml" />
+      <module fileurl="file://$PROJECT_DIR$/rbac.iml" filepath="$PROJECT_DIR$/rbac.iml" />
     </modules>
   </component>
 </project>

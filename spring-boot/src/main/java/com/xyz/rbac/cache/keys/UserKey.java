@@ -20,5 +20,7 @@ public class UserKey extends CacheKeyBase {
         return super.getSeconds();
     }
 
-    public static UserKey TOKEN=new UserKey("user_token",1*24*3600);
+    public static UserKey TOKEN = new UserKey("user_token", 1 * 24 * 3600);
+
+    public static UserKey LOGIN_TIMES = new UserKey("user_login_times", 1 * 3600);
 }
