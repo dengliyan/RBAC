@@ -2,7 +2,7 @@ package com.xyz.rbac.controller;
 
 import com.xyz.rbac.config.LoginRequired;
 import com.xyz.rbac.data.domain.User;
-import com.xyz.rbac.model.LoginUser;
+import com.xyz.rbac.model.UserModel;
 import com.xyz.rbac.result.JSONResult;
 import com.xyz.rbac.result.Result;
 import com.xyz.rbac.service.UserService;
@@ -12,13 +12,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 @Controller
-@RequestMapping("/api/user")
+@RequestMapping("/api/auth/user")
 public class UserController {
 
     @Autowired
@@ -26,7 +24,7 @@ public class UserController {
 
     @PostMapping("/login")
     @ResponseBody
-    public JSONResult login(HttpServletResponse response, @Valid LoginUser model) {
+    public JSONResult login(HttpServletResponse response, @Valid UserModel model) {
         User user = userService.login(response, model.getName(), model.getPassword());
         if (user != null) {
             return JSONResult.success(user);

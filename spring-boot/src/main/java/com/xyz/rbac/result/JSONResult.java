@@ -23,6 +23,8 @@ public class JSONResult<T> {
 
     public static JSONResult SUCCESS=new JSONResult(Result.NONE);
 
+    public static JSONResult FAILURE=new JSONResult(Result.EXCUTE_ERROR);
+
     public static <T> JSONResult<T> success(T data){
         return  new JSONResult<T>(data);
     }

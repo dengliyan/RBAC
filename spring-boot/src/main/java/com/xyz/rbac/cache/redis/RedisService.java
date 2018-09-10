@@ -2,11 +2,18 @@ package com.xyz.rbac.cache.redis;
 
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.xyz.rbac.cache.keys.CacheKeyPrefix;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 @Service
 public class RedisService {
@@ -27,6 +34,22 @@ public class RedisService {
             }
         }
     }
+
+    public <T> List<T> getList(CacheKeyPrefix prefix, String key, Class<T> classz) {
+        Jedis jedis =null;
+        try {
+            jedis= jedisPool.getResource();
+            String value= jedis.get(prefix.getKey(key));
+            return stringToListBean(value,classz);
+        } finally {
+            if (jedis != null) {//关闭连接池
+                jedis.close();
+            }
+        }
+    }
+
+
+
     public <T> Boolean set(CacheKeyPrefix prefix,String key,T value) {
         Jedis jedis =null;
         try {
@@ -50,6 +73,10 @@ public class RedisService {
             }
         }
     }
+
+
+
+
 
     public <T> boolean exists(CacheKeyPrefix prefix, String key) {
         Jedis jedis = null;
@@ -104,6 +131,28 @@ public class RedisService {
         }
     }
 
+    private <T> List<T> stringToListBean(String value, Class<T> classz) {
+        //JSONArray jsonArray= JSONArray.parseArray(value);
+        //List<T> list=new ArrayList<T>();
+        //for (int i=0,len=jsonArray.size();i<len;i++){
+        //    JSON json=(JSON) jsonArray.get(i);
+        //    if(json!=null){
+        //        if (classz == int.class || classz == Integer.class) {
+        //            list.add( (T) Integer.valueOf(value));
+        //        } else if (classz == String.class) {
+        //            list.add( (T)value);
+        //        } else if (classz == long.class || classz == Long.class) {
+        //            list.add((T) Long.valueOf(value));
+        //        }else {
+        //            list.add(JSON.toJavaObject(json, classz));
+        //        }
+        //    }
+        //}
+        //return list;
+        //
+        return JSONArray.parseArray(value, classz);
+    }
+
     private <T>  T stringToBean(String value,Class<T> classz) {
         if (value == null || value.length() == 0 || classz == null) {
             return null;
@@ -115,6 +164,7 @@ public class RedisService {
         } else if (classz == long.class || classz == Long.class) {
             return (T) Long.valueOf(value);
         }
+
         return JSON.toJavaObject(JSON.parseObject(value), classz);
     }
 

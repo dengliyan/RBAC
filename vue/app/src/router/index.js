@@ -4,8 +4,7 @@ import Router from 'vue-router'
 Vue.use(Router)
 
 export default new Router({
-  routes: [
-   
+  routes: [   
     {
       path: '/login',
       name: 'login',
@@ -13,4 +12,4 @@ export default new Router({
     },
 
   ]
-})
+});

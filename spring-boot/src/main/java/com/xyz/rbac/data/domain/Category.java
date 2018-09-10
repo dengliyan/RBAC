@@ -8,12 +8,6 @@ import java.util.List;
 
 @Setter
 @Getter
-public class Category {
-    private Integer id;
-    private String name;
-    private String description;
-    private long rank;
-    private long parentRank;
-    private Integer parentId;
-    private List<Integer> parents;
+public class Category extends Tree {
+
 }

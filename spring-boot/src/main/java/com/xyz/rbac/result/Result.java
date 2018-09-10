@@ -24,13 +24,17 @@ public class Result {
     public static Result USER_TOKEN_ILLEGAL = new Result(500992, "token无效");
 
 
-    public static Result BIND_EXCEPTION=new Result(500000,"参数验证失败，%s");
+    public static Result BIND_EXCEPTION=new Result(500980,"参数不正确，%s");
+    public static Result VALIDATION_EXCEPTION=new Result(500981,"参数不正确");
+
+    public static Result TREE_FILTER_LEVEL_DIFF=new Result(500983,"树层级不一致");
+    public static Result TREE_FILTER_LEVEL_EMPTY=new Result(500983,"树层级不能为空");
 
     //登录
     public static Result USER_NOT_EXISTS=new Result(500010,"用户不存在");
     public static Result USER_PASSWORD_ERROR=new Result(500011,"用户密码不正确");
     public static Result USER_VERIFY_CODE_ERROR=new Result(500012,"验证码不正确");
-    public static Result USER_TRY_LOGIN_LIMIT=new Result(500013,"登录次数太多");
+    public static Result USER_TRY_LOGIN_LIMIT=new Result(500013,"登录次数太多，请稍后再试");
     //修改密码
     public static Result USER_ORIGNAL_PASSWORD_ERROR=new Result(500020,"原始密码不正确");
     public static Result USER_PASSWORD_IS_NULL=new Result(500021,"密码不能为空");

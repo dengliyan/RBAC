@@ -35,17 +35,16 @@ public class UserService {
         User user = null;
         Matcher m = LoginNameConstraint.EMAIL_PATTERN.matcher(loginName);
         if (m.matches()) {
-            System.out.println("aa");
             user = userMapper.getByEmail(loginName);
         } else {
             m = LoginNameConstraint.MOBILE_PATTERN.matcher(loginName);
             if (m.matches()) {
-                System.out.println("bb");
                 user = userMapper.getByMobile(loginName);
             }
         }
         //找到不用户
         if (user == null) {
+            redisService.incr(UserKey.LOGIN_TIMES, loginName);
             throw new BusinessException(Result.USER_NOT_EXISTS);
         }
         //判断密码是否一致
@@ -56,6 +55,7 @@ public class UserService {
             throw new BusinessException(Result.USER_PASSWORD_ERROR);
         }
         //写入redis数据
+        redisService.delete(UserKey.LOGIN_TIMES, loginName);
         user.setToken(UUIDUtil.uuid());
         redisService.set(UserKey.TOKEN, user.getToken(), user);
         //添加cookie

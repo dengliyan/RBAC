@@ -41,6 +41,8 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         if (!(handler instanceof HandlerMethod)) {
             return true;
         }
+
+
         //设置当前的目录
         String url = httpServletRequest.getRequestURI();
         System.out.println(url);

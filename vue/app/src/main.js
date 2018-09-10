@@ -10,7 +10,10 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 Vue.use(ElementUI, { size: 'small' });
 
-/* eslint-disable no-new */
+
+import axios from '@/config/http.js'
+Vue.prototype.$api = axios;
+
 new Vue({
   el: '#app',
   router,

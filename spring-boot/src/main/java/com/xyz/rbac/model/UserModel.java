@@ -7,7 +7,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 @Setter
 @Getter
-public class LoginUser {
+public class UserModel {
 
     @NotEmpty
     @IsLoginName
