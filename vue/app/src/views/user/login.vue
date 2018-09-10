@@ -57,13 +57,5 @@ export default {
 }
 </script>
 
-<style lang="less">
-#fixed-dialog .el-dialog__wrapper{
-    display: flex;
-    justify-content:center;
-    align-items: center;    
-    .el-dialog{margin-bottom: 0}
-    .el-dialog__body{padding-top:0;padding-bottom: 0}
-}
-</style>
+
 

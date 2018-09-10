@@ -1,13 +1,10 @@
 package com.xyz.rbac.util;
 
-import com.xyz.rbac.data.domain.Category;
 import com.xyz.rbac.data.domain.Tree;
 import com.xyz.rbac.exception.BusinessException;
 import com.xyz.rbac.model.UITree;
 import com.xyz.rbac.result.Result;
-import redis.clients.jedis.BinaryClient;
 
-import javax.transaction.TransactionRequiredException;
 import java.util.*;
 
 public class TreeUtil {
@@ -26,13 +23,12 @@ public class TreeUtil {
             HashSet<Integer> hash = new HashSet<Integer>();
             //找到元素
             boolean setParent = true;
-            //
 
             while (parentId != 0 && map.containsKey(parentId) && map.containsKey(id) && !hash.contains(parentId)) {
                 Tree item = map.get(parentId);
                 tree.addParents(item.getId()); //添加父
                 if (setParent) {
-                    item.addChilds(tree.getId());//添加子
+                    item.addChildrens(tree.getId());//添加子
                     tree.setParentRank(item.getParentRank());
                     setParent = false;
                 }
@@ -73,9 +69,9 @@ public class TreeUtil {
                 //创建一个UI对象
                 UITree ui = new UITree();
                 ui.setId(item.getId());
-                ui.setLabel(item.getName());
+                ui.setName(item.getName());
+                ui.setParent(item.getParents());
                 //设置UI对象的子元素
-                System.out.println("setChildren->" + item.getId());
                 ui.setChildren(tree(map, item));
                 list.add(ui);
             }
@@ -89,7 +85,7 @@ public class TreeUtil {
         }
         List<UITree> list=new ArrayList<UITree>();
         //
-        List<Integer> childrens=item.getChilds();
+        List<Integer> childrens=item.getChildrens();
         if(childrens==null||childrens.size()==0) {
             return null;
         }
@@ -101,8 +97,9 @@ public class TreeUtil {
                 UITree ui=new UITree();
                 T data=map.get(c);
                 ui.setId(c);
-                ui.setLabel(data.getName());
+                ui.setName(data.getName());
                 ui.setChildren(tree(map,data));
+                ui.setParent(data.getParents());
                 list.add(ui);
             }
         }

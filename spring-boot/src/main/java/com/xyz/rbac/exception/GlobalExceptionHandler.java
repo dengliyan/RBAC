@@ -6,6 +6,7 @@ import com.xyz.rbac.result.JSONResult;
 import com.xyz.rbac.result.Result;
 import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
@@ -56,6 +57,9 @@ public class GlobalExceptionHandler {
         } else if (exception instanceof ValidationException) {
             ValidationException ex = (ValidationException) exception;
             result = JSONResult.error(Result.VALIDATION_EXCEPTION);
+        }
+        else if(exception instanceof DuplicateKeyException){
+            result = JSONResult.error(Result.DB_EXCUTE_DUPLICATE_ERROR);
         }
 
         if (!(

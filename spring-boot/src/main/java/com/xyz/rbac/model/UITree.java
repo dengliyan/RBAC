@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 public class UITree {
     private Integer id;
-    private String label;
-    private boolean checked;
+    private String name;
     private List<UITree> children;
+    private List<Integer> parent;
 }

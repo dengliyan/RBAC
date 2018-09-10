@@ -14,7 +14,7 @@ import java.util.List;
 public class Tree {
     public Tree() {
         this.parents = new ArrayList<Integer>();
-        this.childs = new ArrayList<Integer>();
+        this.childrens=new ArrayList<Integer>();
     }
     private Integer id;
     private String name;
@@ -26,7 +26,7 @@ public class Tree {
     private Integer parentId;
 
     private List<Integer> parents;
-    private List<Integer> childs;
+    private List<Integer> childrens;
 
     public void  addParents(Integer tree) {
         if (this.parents == null) {
@@ -34,12 +34,12 @@ public class Tree {
         }
         this.parents.add(tree);
     }
-    public void  addChilds(Integer tree) {
-        if (this.childs == null) {
-            this.childs = new ArrayList<Integer>();
+    public void  addChildrens(Integer tree) {
+        if (this.childrens == null) {
+            this.childrens = new ArrayList<Integer>();
         }
         if(tree!=this.id) {
-            this.childs.add(tree);
+            this.childrens.add(tree);
         }
     }
 }

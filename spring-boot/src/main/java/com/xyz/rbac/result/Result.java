@@ -15,8 +15,11 @@ public class Result {
     private String msg;
 
     public static Result NONE = new Result(0, "");
-    public static Result SYSTEM_ERROR = new Result(500999, "系统异常");
-    public static Result EXCUTE_ERROR = new Result(500998, "操作失败");
+    public static Result SYSTEM_ERROR = new Result(599999, "系统异常");
+    public static Result EXCUTE_ERROR = new Result(599998, "操作失败");
+
+    public static Result DB_EXCUTE_ERROR = new Result(599900, "数据库异常");
+    public static Result DB_EXCUTE_DUPLICATE_ERROR = new Result(599901, "数据已存在");
 
     //系统session
     public static Result USER_NOT_LOGIN = new Result(500990, "未登录");
@@ -24,9 +27,10 @@ public class Result {
     public static Result USER_TOKEN_ILLEGAL = new Result(500992, "token无效");
 
 
+
+
     public static Result BIND_EXCEPTION=new Result(500980,"参数不正确，%s");
     public static Result VALIDATION_EXCEPTION=new Result(500981,"参数不正确");
-
     public static Result TREE_FILTER_LEVEL_DIFF=new Result(500983,"树层级不一致");
     public static Result TREE_FILTER_LEVEL_EMPTY=new Result(500983,"树层级不能为空");
 
