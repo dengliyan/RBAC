@@ -91,21 +91,21 @@ export default {
     },
     methods:{
         submit(){
-            let _this=this;
+            let that=this;
             let data={}
-            for(var g in _this.formData){
-                data[g]=_this.formData[g];
+            for(var g in that.formData){
+                data[g]=that.formData[g];
             }
             data.pid=data.parents[data.parents.length-1];
             //如果是添加
             if(data.id==0){
-                _this.$api.post('/api/auth/category/add',data).then(response=>{
+                that.$api.post('/api/auth/category/add',data).then(response=>{
                     if(response.ret==0){
-                        _this.$message('添加成功');
-                        _this.UIDialog=false;
-                        _this.$emit('on-add',{response:response.data,form:_this.formData});//回调成功事件
+                        that.$message('添加成功');
+                        that.UIDialog=false;
+                        that.$emit('on-add',{response:response.data,form:that.formData});//回调成功事件
                     }else{
-                        _this.$message.error(response.msg||'添加失败');
+                        that.$message.error(response.msg||'添加失败');
                     }
                 });
             }

@@ -3,6 +3,7 @@ package com.xyz.rbac.controller;
 import com.xyz.rbac.data.domain.Category;
 import com.xyz.rbac.model.CategoryModel;
 import com.xyz.rbac.result.JSONResult;
+import com.xyz.rbac.result.Result;
 import com.xyz.rbac.service.CategoryService;
 import com.xyz.rbac.util.TreeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,17 @@ public class CategoryController {
         return JSONResult.SUCCESS;
     }
 
+    @GetMapping("/item/{id}")
+    public JSONResult get(@PathVariable("id") Integer id) {
+        List<Category> lists = categoryService.get();
+        for (Category category : lists) {
+            if (category.getId() == id) {
+                return JSONResult.success(category);
+            }
+        }
+        return JSONResult.error(Result.ARGUMENTS_ERROR.format("id=" + id + "不存在"));
+    }
+
     @PostMapping("/update")
     public JSONResult update(@Valid CategoryModel model) {
 
@@ -52,7 +64,6 @@ public class CategoryController {
     @GetMapping("/list")
     public JSONResult list() {
         List<Category> lists=categoryService.get();
-        //List<Integer> lists2=categoryService.get2();
         return JSONResult.success(lists);
     }
 

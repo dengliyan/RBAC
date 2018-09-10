@@ -19,7 +19,7 @@ public interface CategoryMapper {
     //@Update("update auth_category set is_valid=-1*`id` where id=#{id}")
     //public Integer update(@Param("id") Integer category_id);
 
-    @Select("select * from auth_category where is_valid=1")
+    @Select("select * from auth_category where is_valid=1 order by rank asc")
     public List<Category> get();
 
 

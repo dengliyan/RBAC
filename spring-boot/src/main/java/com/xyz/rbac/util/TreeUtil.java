@@ -72,7 +72,7 @@ public class TreeUtil {
                 ui.setName(item.getName());
                 ui.setParent(item.getParents());
                 //设置UI对象的子元素
-                ui.setChildren(tree(map, item));
+                ui.setChildrens(tree(map, item));
                 list.add(ui);
             }
         }
@@ -98,7 +98,7 @@ public class TreeUtil {
                 T data=map.get(c);
                 ui.setId(c);
                 ui.setName(data.getName());
-                ui.setChildren(tree(map,data));
+                ui.setChildrens(tree(map,data));
                 ui.setParent(data.getParents());
                 list.add(ui);
             }

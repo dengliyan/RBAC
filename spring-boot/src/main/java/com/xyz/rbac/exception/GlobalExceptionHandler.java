@@ -1,11 +1,9 @@
 package com.xyz.rbac.exception;
 
 import com.alibaba.fastjson.JSON;
-import com.xyz.rbac.config.LoginRequired;
 import com.xyz.rbac.result.JSONResult;
 import com.xyz.rbac.result.Result;
 import org.apache.catalina.servlet4preview.http.HttpServletRequest;
-import org.springframework.core.MethodParameter;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindException;
@@ -15,12 +13,10 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ValidationException;
 import java.io.OutputStream;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
@@ -53,10 +49,10 @@ public class GlobalExceptionHandler {
             List<FieldError> fieldErrors = ex.getFieldErrors();
             //FieldError error = fieldErrors.get(0);
             ObjectError error = errors.get(0);
-            result = JSONResult.error(Result.BIND_EXCEPTION.format(error.getDefaultMessage()));
+            result = JSONResult.error(Result.ARGUMENTS_ERROR.format(error.getDefaultMessage()));
         } else if (exception instanceof ValidationException) {
             ValidationException ex = (ValidationException) exception;
-            result = JSONResult.error(Result.VALIDATION_EXCEPTION);
+            result = JSONResult.error(Result.ARGUMENTS_VALIDATION_EXCEPTION);
         }
         else if(exception instanceof DuplicateKeyException){
             result = JSONResult.error(Result.DB_EXCUTE_DUPLICATE_ERROR);

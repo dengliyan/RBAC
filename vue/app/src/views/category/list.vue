@@ -19,7 +19,8 @@
 </template>
 
 <script>
-import dialog from './dialog.vue'
+import dialog from './dialog.vue'   
+import util from '@/config/date-util.js'
 export default {
     components:{
         'v-dialog':dialog
@@ -47,13 +48,13 @@ export default {
     },    
     methods:{
         getData(callback){
-            let _this=this;
-            _this.$api.get('/api/auth/category/tree?id=1').then(response=>{
+            let that=this;
+            that.$api.get('/api/auth/category/tree?id=1').then(response=>{
                 if(response.ret==0){
-                    _this.tree=response.data;  
+                    that.tree=response.data;  
                     callback&&callback();
                 }else{
-                    _this.message.error('读取失败，请重试。')
+                    that.message.error('读取失败，请重试。')
                 }
             });
         },
@@ -74,18 +75,32 @@ export default {
         syncDialog(val){
             this.props.dialog.show=val;
         },
+        //添加
         append(data){
             this.props.dialog.show=true;
             let parents=([data.id].concat(data.parent||[]));//拼接
-            parents.reverse();//反转          
-            this.formData={id:0,name:'',description:'',parents:parents,rank:'2018-01-01 12:12:12'};
+            parents.reverse();//反转 
+            this.formData={id:0,name:'',description:'',parents:parents,rank:util.now("yyyy-MM-dd")+" "+"00:00:00"};
         },
         afterAdd(param){
-            let _this=this;
+            let that=this;
             this.getData(function () {
-               _this.props.tree.keys=param.form.parents;//展开
+               that.props.tree.keys=param.form.parents;//展开
             });
-        }
+        },
+        edit(data){ 
+            let that=this;
+            that.$api.get('/api/auth/category/item/'+data.id).then(response=>{
+                if(response.ret==0){
+                    let item=response.data;
+                    let parents=([item.id].concat(item.parents||[]));//拼接
+                    parents.reverse();//反转 
+                    that.props.dialog.show=true;
+                    that.formData={id:item.id,name:item.name,description:item.description,parents:parents,rank:util.format(new Date(item.rank),'yyyy-MM-dd hh:mm:ss')};
+                }
+            });
+            //
+        },
     },
 }
 </script>

@@ -10,6 +10,6 @@ import java.util.List;
 public class UITree {
     private Integer id;
     private String name;
-    private List<UITree> children;
+    private List<UITree> childrens;
     private List<Integer> parent;
 }

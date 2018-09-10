@@ -41,16 +41,15 @@ export default {
     },
     methods:{
         login(){
-            let _this=this;
-            this.$api.post('/api/user/login',_this.formLogin).then(rep=>{
-                if(rep.ret==0){//登录成功
-                     //保存token
-                     this.$message('登录成功')                     
+            let that=this;
+            this.$api.post('/api/user/login',that.formLogin).then(rep=>{
+                if(rep.ret==0){//登录成功                     
+                     that.$message('登录成功')                     
                 }else{
-                    this.$message.error(rep.msg||'登录失败');
+                    that.$message.error(rep.msg||'登录失败');
                 }
             },err=>{
-                this.$message.error('登录失败');
+                that.$message.error('登录失败');
             })
         }
     }
