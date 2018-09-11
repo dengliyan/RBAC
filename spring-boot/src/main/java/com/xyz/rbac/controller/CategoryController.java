@@ -1,7 +1,7 @@
 package com.xyz.rbac.controller;
 
 import com.xyz.rbac.data.domain.Category;
-import com.xyz.rbac.model.CategoryModel;
+import com.xyz.rbac.vo.CategoryVo;
 import com.xyz.rbac.result.JSONResult;
 import com.xyz.rbac.result.Result;
 import com.xyz.rbac.service.CategoryService;
@@ -16,7 +16,7 @@ import java.util.List;
 
 @Controller
 @ResponseBody
-@RequestMapping("/api/auth/category")
+@RequestMapping("/api/auth")
 public class CategoryController {
 
 
@@ -25,50 +25,56 @@ public class CategoryController {
     @Autowired
     CategoryService categoryService;
 
-    @PostMapping("/add")
+    @PostMapping("/category/add")
 
-    public JSONResult add(@Valid CategoryModel model) {
+    public JSONResult add(@Valid CategoryVo model) {
         Category category = new Category();
         category.setName(model.getName());
         category.setDescription(model.getDescription());
         category.setParentId(model.getPid());
         category.setRank(model.getRank().getTime());
-        categoryService.add(category);
-        return JSONResult.SUCCESS;
-    }
-
-    @GetMapping("/item/{id}")
-    public JSONResult get(@PathVariable("id") Integer id) {
-        List<Category> lists = categoryService.get();
-        for (Category category : lists) {
-            if (category.getId() == id) {
-                return JSONResult.success(category);
-            }
+        if(categoryService.add(category)){
+            return JSONResult.SUCCESS;
         }
-        return JSONResult.error(Result.ARGUMENTS_ERROR.format("id=" + id + "不存在"));
+        return JSONResult.FAILURE;
     }
 
-    @PostMapping("/update")
-    public JSONResult update(@Valid CategoryModel model) {
-
-        return JSONResult.SUCCESS;
+    @GetMapping("/category")
+    public JSONResult get(@RequestParam("id") Integer id) {
+        return JSONResult.success(categoryService.get(id));
     }
 
-    @PostMapping("/delete")
+    @PostMapping("/category/update")
+    public JSONResult update(@Valid CategoryVo model) {
+        Category category = new Category();
+        category.setId(model.getId());
+        category.setName(model.getName());
+        category.setDescription(model.getDescription());
+        category.setParentId(model.getPid());
+        category.setRank(model.getRank().getTime());
+        if(categoryService.update(category)){
+            return JSONResult.SUCCESS;
+        }
+        return JSONResult.FAILURE;
+    }
+
+    @PostMapping("/category/delete")
     public JSONResult delete(@RequestParam("id") Integer id) {
-
-        return JSONResult.SUCCESS;
+        if (categoryService.delete(id, 0)) {
+            return JSONResult.SUCCESS;
+        }
+        return JSONResult.FAILURE;
     }
 
-
+    /*
     @GetMapping("/list")
     public JSONResult list() {
         List<Category> lists=categoryService.get();
         return JSONResult.success(lists);
-    }
+    }*/
 
-    @GetMapping("/tree")
-    public JSONResult tree(HttpServletRequest request,@RequestParam("id") Integer[] id) {
+    @GetMapping("/category/tree")
+    public JSONResult tree(HttpServletRequest request,@RequestParam(name = "id",required=false) Integer[] id) {
         List<Category> lists = categoryService.get();
         return JSONResult.success(TreeUtil.tree(lists, id));
     }

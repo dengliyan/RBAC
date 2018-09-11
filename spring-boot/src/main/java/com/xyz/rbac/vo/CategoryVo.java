@@ -1,6 +1,5 @@
-package com.xyz.rbac.model;
+package com.xyz.rbac.vo;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -10,7 +9,7 @@ import java.util.Date;
 
 @Setter
 @Getter
-public class CategoryModel {
+public class CategoryVo {
     private Integer id;
 
     @NotEmpty(message =  "分类名称不能为空")
@@ -22,7 +21,7 @@ public class CategoryModel {
 
     private Integer pid;
 
-    public CategoryModel(){
+    public CategoryVo(){
         this.rank=new Date();
     }
 }

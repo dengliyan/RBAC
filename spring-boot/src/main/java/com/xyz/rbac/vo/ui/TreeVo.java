@@ -1,4 +1,4 @@
-package com.xyz.rbac.model;
+package com.xyz.rbac.vo.ui;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,9 +7,9 @@ import java.util.List;
 
 @Setter
 @Getter
-public class UITree {
+public class TreeVo {
     private Integer id;
     private String name;
-    private List<UITree> childrens;
-    private List<Integer> parent;
+    private List<TreeVo> childrens;
+    private List<Integer> parents;
 }

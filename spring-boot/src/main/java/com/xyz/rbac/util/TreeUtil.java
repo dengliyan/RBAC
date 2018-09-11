@@ -2,7 +2,7 @@ package com.xyz.rbac.util;
 
 import com.xyz.rbac.data.domain.Tree;
 import com.xyz.rbac.exception.BusinessException;
-import com.xyz.rbac.model.UITree;
+import com.xyz.rbac.vo.ui.TreeVo;
 import com.xyz.rbac.result.Result;
 
 import java.util.*;
@@ -38,8 +38,8 @@ public class TreeUtil {
         }
     }
 
-    public static <T extends Tree> List<UITree> tree(List<T> trees, Integer... selector) {
-        List<UITree> list = new ArrayList<UITree>();
+    public static <T extends Tree> List<TreeVo> tree(List<T> trees, Integer... selector) {
+        List<TreeVo> list = new ArrayList<TreeVo>();
         //转化成MAP，以加快处理速度
         Map<Integer, T> map = new HashMap<Integer, T>();
         for (T item : trees) {
@@ -47,30 +47,36 @@ public class TreeUtil {
         }
         HashSet<Integer> hash = new HashSet<Integer>();
         Integer level = -1;
-        for (Integer id : selector) {
-            if (map.containsKey(id)) {
-                Tree data = map.get(id);
-                //必须在同一层级
-                if (level == -1) {
-                    level = data.getParentId();
-                } else {
-                    if (level != data.getParentId()) {
-                        throw new BusinessException(Result.TREE_FILTER_LEVEL_DIFF);
+        if (selector != null && selector.length > 0) {
+            for (Integer id : selector) {
+                if (map.containsKey(id)) {
+                    Tree data = map.get(id);
+                    //必须在同一层级
+                    if (level == -1) {
+                        level = data.getParentId();
+                    } else {
+                        if (level != data.getParentId()) {
+                            throw new BusinessException(Result.TREE_FILTER_LEVEL_DIFF);
+                        }
                     }
+                    hash.add(id);
                 }
-                hash.add(id);
             }
         }
         if (hash.size() == 0) {
-            throw new BusinessException(Result.TREE_FILTER_LEVEL_EMPTY);
+            for (T item : trees) {
+                if (item.getParentId() == 0 || item.getParents() == null || item.getParents().size() == 0) {
+                    hash.add(item.getId());
+                }
+            }
         }
         for (T item : trees) {
             if (hash.contains(item.getId())) {
                 //创建一个UI对象
-                UITree ui = new UITree();
+                TreeVo ui = new TreeVo();
                 ui.setId(item.getId());
                 ui.setName(item.getName());
-                ui.setParent(item.getParents());
+                ui.setParents(item.getParents());
                 //设置UI对象的子元素
                 ui.setChildrens(tree(map, item));
                 list.add(ui);
@@ -79,11 +85,11 @@ public class TreeUtil {
         return list;
     }
 
-    private static <T extends Tree> List<UITree> tree(Map<Integer, T> map,T item) {
+    private static <T extends Tree> List<TreeVo> tree(Map<Integer, T> map, T item) {
         if(!map.containsKey(item.getId())) {
             return null;
         }
-        List<UITree> list=new ArrayList<UITree>();
+        List<TreeVo> list=new ArrayList<TreeVo>();
         //
         List<Integer> childrens=item.getChildrens();
         if(childrens==null||childrens.size()==0) {
@@ -94,12 +100,12 @@ public class TreeUtil {
         for(Integer c :childrens){
             System.out.println("遍历所有的子 "+c);
             if(map.containsKey(c)) {
-                UITree ui=new UITree();
+                TreeVo ui=new TreeVo();
                 T data=map.get(c);
                 ui.setId(c);
                 ui.setName(data.getName());
                 ui.setChildrens(tree(map,data));
-                ui.setParent(data.getParents());
+                ui.setParents(data.getParents());
                 list.add(ui);
             }
         }

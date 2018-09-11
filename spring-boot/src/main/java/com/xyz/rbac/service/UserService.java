@@ -15,6 +15,7 @@ import org.springframework.util.StringUtils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 import java.util.regex.Matcher;
 
 @Service
@@ -75,4 +76,13 @@ public class UserService {
         redisService.set(UserKey.TOKEN, user.getToken(), user);
         return true;
     }
+    /*
+    public boolean updatePassword(Integer dept_id,Integer... user) {
+
+    }*/
+
+    public List<User> get(){
+        return userMapper.get();
+    }
+
 }

@@ -1,17 +1,26 @@
 <template>
     <div id="category-tree">
         <v-dialog 
-                   :propsUIDialog="props.dialog.show"
+                   :propsUIDialog="props.formDialog.show"
                    :propsForm="formData"
                    :propsTree="tree"
                    @sync-dialog="syncDialog"
                    @on-add="afterAdd"
                    @on-edit="afterEdit" />
+
+        <v-user-dialog
+                    :propsUIDialog="props.userDialog.show" 
+                    :propsTitle="props.userDialog.title"
+                    :propsData="props.userDialog.data"
+                    :propsSelected="props.userDialog.selected"
+                    @sync-dialog="syncDialog2" />
+
         <el-tree 
             v-if="tree!=null" 
             node-key="id" 
             highlight-current
             :data="tree" 
+            default-expand-all	
             :default-expanded-keys="props.tree.keys" 
             :props="props.tree.defaultProps" 
             :expand-on-click-node="false"
@@ -20,25 +29,31 @@
 </template>
 
 <script>
-import dialog from './dialog.vue'   
-import util from '@/config/date-util.js'
+ import util from '@/config/date-util.js'
 export default {
     components:{
-        'v-dialog':dialog
+        'v-dialog':resolve => require(["./dialog.vue"], resolve),
+        'v-user-dialog':resolve => require(["./user.vue"], resolve),
     },
     data(){
         return {
             tree:null,
             props:{
                 tree:{
-                    keys:[1],
+                    keys:[0],
                     defaultProps:{
                         children: 'childrens',
                         label: 'name'
                     }
                 },
-                dialog:{
+                formDialog:{
                     show:false
+                },
+                userDialog:{
+                    show:false,
+                    title:'',
+                    data:[],
+                    selected:[]
                 }
             },
             formData:{}
@@ -50,9 +65,9 @@ export default {
     methods:{
         getData(callback){
             let that=this;
-            that.$api.get('/api/auth/category/tree').then(response=>{
+            that.$api.get('/api/auth/dept/tree').then(response=>{
                 if(response.ret==0){
-                    that.tree=response.data;  
+                    that.tree=[{id:0,name:'组织架构',childrens:response.data}];  
                     callback&&callback();
                 }else{
                     that.message.error('读取失败，请重试。')
@@ -60,35 +75,45 @@ export default {
             });
         },
         renderContent(h, { node, data, store }) {        
-            let edit=data.id==1;
+            let edit=data.id==0;
             let remove=(data.id==0)||(data.childrens!=null&&data.childrens.length>0);
             return (
             <span class="custom-tree-node">
-                <span>{node.label}({data.id})</span>
-                <span>
-                    <el-button-group> 
-                        <el-button size="mini" icon="fa  fa-cog" circle type="text" on-click={ () => this.add(data) } disabled={data.id==1}></el-button>
-                        <el-button size="mini" icon="fa fa-plus-square" circle type="text" on-click={ () => this.add(data) }></el-button>
-                        <el-button size="mini" icon="fa fa-edit" circle type="text" on-click={ () => this.edit(data) } disabled={edit}></el-button>
-                        <el-button size="mini" icon="fa fa-times-circle" circle  type="text" on-click={ () => this.del(node, data) } disabled={remove}></el-button>
-                    </el-button-group> 
+                <span>{node.label}</span>
+                <span>  
+                    <el-button-group>              
+                        <el-button title="添加" size="mini" icon="fa fa-plus-square" circle type="text" on-click={ () => this.add(data) }></el-button>
+                        <el-button title="修改" size="mini" icon="fa fa-edit" circle type="text" on-click={ () => this.edit(data) } disabled={edit}></el-button>
+                        <el-button title="删除" size="mini" icon="fa fa-times-circle" circle  type="text" on-click={ () => this.del(node, data) } disabled={remove}></el-button>
+                        
+                    </el-button-group>
                 </span>
             </span>);
         },
         syncDialog(val){
-            this.props.dialog.show=val;
+            this.props.formDialog.show=val;
+        },
+        syncDialog2(val){
+            this.props.userDialog.show=val;
         },
         //添加
         add(data){
             let that=this;
-            that.$api.get('/api/auth/category?id='+data.id).then(response=>{
-                if(response.ret==0){
-                    let parents=([response.data.id].concat(response.data.parents||[]));//拼接
-                    parents.reverse();//反转 
-                    that.props.dialog.show=true;
-                    that.formData={id:0,name:'',description:'',parents:parents,rank:util.now("yyyy-MM-dd")+" "+"00:00:00"};
-                }
-            });
+            if(data.id==0){
+                let parents=[data.id];
+                that.props.dialog.show=true;
+                that.formData={id:0,name:'',description:'',parents:parents,rank:util.now("yyyy-MM-dd")+" "+"00:00:00"};
+            }else{
+                that.$api.get('/api/auth/dept?id='+data.id).then(response=>{
+                    if(response.ret==0){
+                        let parents=([response.data.id].concat(response.data.parents||[]));//拼接
+                        parents.push(0);//
+                        parents.reverse();//反转 
+                        that.props.formDialog.show=true;
+                        that.formData={id:0,name:'',description:'',parents:parents,rank:util.now("yyyy-MM-dd")+" "+"00:00:00"};
+                    }
+                });
+            }
             
         },
         afterAdd(param){
@@ -98,13 +123,14 @@ export default {
             });
         },
         edit(data){ 
-            let that=this;
-            that.$api.get('/api/auth/category?id='+data.id).then(response=>{
+            let that=this;            
+            that.$api.get('/api/auth/dept?id='+data.id).then(response=>{
                 if(response.ret==0){
                     let item=response.data;
                     let parents=item.parents||[];//拼接
+                    parents.push(0);
                     parents.reverse();//反转 
-                    that.props.dialog.show=true;
+                    that.props.formDialog.show=true;
                     that.formData={id:item.id,name:item.name,description:item.description,parents:parents,rank:util.format(new Date(item.rank),'yyyy-MM-dd hh:mm:ss')};
                 }
             });
@@ -118,7 +144,7 @@ export default {
         del(node, data){
             let that=this;
             that.$confirm('删除分类 '+data.name+', 是否继续?', '提示', {confirmButtonText: '确定',cancelButtonText: '取消', type: 'warning'}).then(() => {
-                that.$api.post('/api/auth/category/delete',{id:data.id}).then(response=>{
+                that.$api.post('/api/auth/dept/delete',{id:data.id}).then(response=>{
                     if(response.ret==0){
                         that.$message('已删除');
                         that.getData(function () {
@@ -131,6 +157,22 @@ export default {
             }).catch(() => {
 
             });
+        },
+        user(data){
+            //读取当前用户
+            let that=this;
+            that.$api.get('/api/auth/dept/user?dept='+data.id).then(response=>{
+                let selected=[];
+                for(var g in response.data){
+                    for(var x in response.data[g].options){
+                        if(response.data[g].options[x].val==data.id){
+                            selected.push(response.data[g].options[x].value);
+                        }
+                    }
+                }
+                that.props.userDialog={show:true,title:data.name,data:response.data,selected:selected};
+            });          
+
         }
     },
 }

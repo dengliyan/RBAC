@@ -10,11 +10,20 @@ export default new Router({
       name: 'default',
       component: resolve => require(["@/views/layout.vue"], resolve),
       children:[
-
         {
           path: '/category',
           name: 'category',
           component: resolve => require(["@/views/category/list.vue"], resolve),
+        },
+        {
+          path: '/dept',
+          name: 'dept',
+          component: resolve => require(["@/views/dept/list.vue"], resolve),
+        },
+        {
+          path: '/user',
+          name: 'user',
+          component: resolve => require(["@/views/user/list.vue"], resolve),
         },
       ]
     },  

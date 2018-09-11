@@ -18,7 +18,6 @@ public class Tree {
     }
     private Integer id;
     private String name;
-    private String description;
     private long rank;
 
     private long parentRank;

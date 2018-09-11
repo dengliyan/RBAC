@@ -1,7 +1,7 @@
 <template>
     <div class="fixed-dialog">
         <el-dialog
-            :title="formData.id==0?'新建分类':'修改分类'"
+            :title="formData.id==0?'新建部门':'修改部门'"
             :visible.sync="UIDialog"
             top="0px"
             :close-on-click-modal="false" 
@@ -9,16 +9,13 @@
             width="600px"
                         >            
                 <el-form   :model="formData" ref="formData" label-width="72px">
-                    <el-form-item label="分类名称">
-                        <el-input placeholder="分类名称" v-model="formData.name"></el-input>
+                    <el-form-item label="部分名称">
+                        <el-input placeholder="部分名称" v-model="formData.name"></el-input>
                     </el-form-item>
-                     <el-form-item label="分类描述">
-                        <el-input type="textarea"  v-model="formData.description" placeholder="分类描述" :autosize="{ minRows: 3}"></el-input>
-                    </el-form-item>
-                    <el-form-item label="所属分类">
+                    <el-form-item label="上级部门">
                          <el-cascader
                             v-model="formData.parents"
-                            placeholder="所属分类"
+                            placeholder="上级部门"
                             :options="tree"
                             :props="{label: 'name',value:'id',children:'childrens'}"     
                             :change-on-select="true"
@@ -83,7 +80,6 @@ export default {
                 id:0,
                 rank:'',
                 name:'',
-                description:'',
                 parents:[1]
             },
             tree:[]
@@ -99,7 +95,7 @@ export default {
             data.pid=data.parents[data.parents.length-1];
             //如果是添加
             if(data.id==0){
-                that.$api.post('/api/auth/category/add',data).then(response=>{
+                that.$api.post('/api/auth/dept/add',data).then(response=>{
                     if(response.ret==0){
                         that.$message('添加成功');
                         that.UIDialog=false;
@@ -109,7 +105,7 @@ export default {
                     }
                 });
             }else{
-                that.$api.post('/api/auth/category/update',data).then(response=>{
+                that.$api.post('/api/auth/dept/update',data).then(response=>{
                     if(response.ret==0){
                         that.$message('修改成功');
                         that.UIDialog=false;

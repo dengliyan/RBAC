@@ -1,10 +1,7 @@
 package com.xyz.rbac.data.mapper;
 
 import com.xyz.rbac.data.domain.User;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -23,12 +20,17 @@ public interface UserMapper {
     @Select("select count(0) from auth_users where is_valid=1")
     public Integer getAllListCount();
 
-    @Select("select * from auth_users where is_valid=1 order by createDate desc limit #{skip},#{size}")
-    public List<User> getAllList(@Param("skip") Integer skip, @Param("size") Integer size);
+    @Select("select * from auth_users where is_valid=1")
+    public List<User> get();
 
     @Insert("insert into auth_users() values()")
     public Integer insert(User user);
 
     @Insert("insert into auth_users() values()")
     public Integer update(Integer id, String password);
+
+
+    @Update("update auth_users set dept_id=#{dept_id} where id=#{user_id}")
+    public Integer updateDeptById(@Param("user_id") Integer user_id, @Param("dept_id") Integer dept_id);
+
 }

@@ -24,4 +24,5 @@ public class User {
     private String lastLoignIp;
     private Boolean isValid;
     private String token;
+    private Integer deptId;
 }

@@ -6,8 +6,9 @@ import lombok.Setter;
 import java.util.Date;
 import java.util.List;
 
-@Setter
 @Getter
+@Setter
 public class Category extends Tree {
 
+    private String description;
 }

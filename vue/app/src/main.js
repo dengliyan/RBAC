@@ -14,6 +14,7 @@ Vue.use(ElementUI, { size: 'small' });
 import axios from '@/config/http.js'
 Vue.prototype.$api = axios;
 
+import  '@/assets/css/reset.less'
 new Vue({
   el: '#app',
   router,

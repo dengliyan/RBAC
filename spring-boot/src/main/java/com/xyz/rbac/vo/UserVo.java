@@ -1,4 +1,4 @@
-package com.xyz.rbac.model;
+package com.xyz.rbac.vo;
 
 import com.xyz.rbac.validation.IsLoginName;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 @Setter
 @Getter
-public class UserModel {
+public class UserVo {
 
     @NotEmpty
     @IsLoginName

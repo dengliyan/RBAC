@@ -1,4 +1,4 @@
-# VUE+Spring Boot构建的角色权限管理系统  
+# VUE+Spring Boot构建基于角色的权限访问控制系统  
 
 前端使用vue+element-ui构建  
 
@@ -9,7 +9,7 @@
 前端  
 element-ui:http://element.eleme.io/#/zh-CN
 
-后端
+后端  
 spring boot  
 mybatis  
 redis  
