@@ -34,4 +34,11 @@ public class JSONResult<T> {
         }
         return null;
     }
+
+    public static JSONResult result(boolean result) {
+        if (result) {
+            return JSONResult.SUCCESS;
+        }
+        return JSONResult.FAILURE;
+    }
 }

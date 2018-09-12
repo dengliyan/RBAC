@@ -1,7 +1,7 @@
 <template>
     <div>
         <el-dialog
-            title="添加人员"
+            :title="formData.name"
             :visible.sync="UIDialog"
             top="0px"
             :close-on-click-modal="false" 
@@ -9,14 +9,18 @@
             width="600px">                 
                 <el-form :model="formData"   label-width="6em">
                     <el-form-item label="用户姓名">
-                        <el-input v-model="formData.name" placeholder="用户姓名" ></el-input>
+                        <el-input v-model="formData.name" placeholder="用户姓名" >                            
+                            <el-button type="danger" slot="append" icon="fa fa-ban" style="color: #fff;background-color:#f56c6c;border-color: #f56c6c;"> 删除用户</el-button>
+                        </el-input>
                     </el-form-item>
                     
                     <el-form-item label="邮箱">
-                        <el-input v-model="formData.email" placeholder="邮箱" ></el-input>
+                        <el-input v-model="formData.email" placeholder="邮箱" >
+                            <el-button slot="append" icon="fa fa-envelope"> 密码重置</el-button>
+                        </el-input>
                     </el-form-item>
                     <el-form-item label="手机号">
-                        <el-input v-model="formData.mobile" placeholder="手机号" ></el-input>
+                        <el-input v-model="formData.mobile" placeholder="手机号" :maxlength="11"></el-input>
                     </el-form-item>
                     <el-form-item label="所属部门">
                          <el-cascader
@@ -28,17 +32,27 @@
                             style="width:100%"
                         ></el-cascader>
                     </el-form-item>
-                    <el-form-item label="初始密码">
-                        <el-input type="password" v-model="formData.password" placeholder="初始密码" ></el-input>
-                    </el-form-item>
-                    <el-form-item label="重复密码">
-                        <el-input type="password" v-model="formData.password2" placeholder="重复密码" ></el-input>
+                    <el-form-item label="当前角色">
+                        <el-select v-model="formData.role" multiple placeholder="请选择" style="width:100%">
+                            <el-option
+                                v-for="item in role"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                            </el-option>
+                        </el-select>
                     </el-form-item>
                 </el-form>
 
-                <span slot="footer" class="dialog-footer">
-                    <el-button @click="UIDialog=false">取 消</el-button>
-                    <el-button type="primary" @click="submit" :disabled="UISubmit" :loading="UISubmit">{{UISubmit?'提交中...':'确 定'}}</el-button>
+                <span slot="footer" class="dialog-footer" style="display:flex;justify-content: space-between;">
+                    <div>
+                        <el-button-group>
+                            
+                        </el-button-group>  
+                    </div>
+                    <div>
+                        <el-button type="primary" @click="submit" :disabled="UISubmit" :loading="UISubmit">修改信息</el-button>
+                    </div>
                 </span>
             </el-dialog>
     </div>
@@ -60,8 +74,7 @@ export default {
             default:[]
         },
     },
-    mounted(){
-
+    mounted(){        
         if(this.value){
             if(this.value.show!=null&&this.value.show!=undefined){
                 this.UIDialog = this.value.show;
@@ -70,22 +83,11 @@ export default {
                 this.formData=this.value.form;     
             }
         }
-        //初始化
-        this.formData.name='';
-        this.formData.email='';
-        this.formData.mobile='';
-        this.formData.password='';
-        this.formData.password2='';
     },
     watch: {
         value(item) {
             this.UIDialog = item.show;
-            this.formData=item.form;   
-            this.formData.name='';
-            this.formData.email='';
-            this.formData.mobile='';
-            this.formData.password='';
-            this.formData.password2='';                    
+            this.formData=item.form;              
         },
         UIDialog(val){
             this.$emit('sync-dialog',val);
@@ -96,6 +98,14 @@ export default {
             UIDialog:false,
             UISubmit:false, 
             formData:{},
+            role:[{
+                    value: '管理员',
+                    label: '管理员'
+                },
+                {
+                    value: '主编',
+                    label: '主编'
+                }]
         }
     },
     methods:{

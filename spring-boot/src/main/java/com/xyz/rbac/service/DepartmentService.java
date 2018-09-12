@@ -122,7 +122,7 @@ public class DepartmentService {
                 List<User> values = userMap.get(key);
                 if(values!=null&&values.size()>0){
                     for (User user:values) {
-                        vo.setChildren(new UserDeptTreeVo(user.getId(), user.getName(), true));
+                        vo.setChildren(new UserDeptTreeVo(user.getId(), user.getName()+" ("+user.getEmail()+")", true));
                     }
                 }
             }
@@ -132,77 +132,4 @@ public class DepartmentService {
         return list;
     }
 
-    public List<GroupVo> getDeptWithUserByOptionGroup(){
-        List<User > users=userService.get();
-        List<Department> departments=this.fill();
-        List<GroupVo> options=new ArrayList<GroupVo>();
-
-        Map<Integer,List<GroupItemVo>> map=new HashMap<Integer,List<GroupItemVo>>();
-        Map<Integer,Department> dpts=new HashMap<Integer,Department>();
-        //建立部门字典
-        for (Department department:departments) {
-            dpts.put(department.getId(), department);
-        }
-        //根据用户建立
-        for (User user:users) {
-            //读取用户的字典，按
-            GroupItemVo vo = new GroupItemVo();
-            vo.setValue(user.getId());
-            vo.setName(user.getName());
-            vo.setVal(user.getDeptId());
-            Integer key = -1;
-            if (dpts.containsKey(user.getDeptId())) {
-                Department dpt = dpts.get(user.getDeptId());
-                List<Integer> parents = dpt.getParents();
-                //生成名字
-                Integer length = (parents != null && parents.size() > 0) ? parents.size() : 0;
-                String[] names = new String[length+1];
-                names[0] = dpt.getName();
-                //System.out.println(names[0]);
-                if (parents != null && parents.size() > 0) {
-                    //names[0] = dpt.getName();
-                    for (int i = 0; i < length ; i++) {
-                        if (dpts.containsKey(parents.get(i))) {
-                            names[i+1] = dpts.get(parents.get(i)).getName();
-                        }
-                    }
-                }
-                if (names.length > 0) {
-                    ArrayUtils.reverse(names);
-                    vo.setText(org.apache.commons.lang3.StringUtils.join(names, " / "));
-                }
-                //
-                key = length == 0 ? dpt.getId() : dpt.getParents().get(length - 1);
-            }
-            if (!map.containsKey(key)) {
-                map.put(key, new ArrayList<GroupItemVo>());
-            }
-            List<GroupItemVo> values = map.get(key);
-            values.add(vo);
-        }
-        //根据部门生成对应的数据
-        for (Department department:departments) {
-            if(department.getParentId()==0) {
-                GroupVo optionGroupVo = new GroupVo();
-                optionGroupVo.setName(department.getName());
-                if(map.containsKey(department.getId())) {
-                    optionGroupVo.setOptions(map.get(department.getId()));
-                    map.remove(department.getId());
-                    options.add(optionGroupVo);
-                }
-            }
-        }
-        //未分组
-        if(!map.keySet().isEmpty()) {
-            GroupVo optionGroupVo = new GroupVo();
-            optionGroupVo.setName("未分组");
-            List<GroupItemVo> list=new ArrayList<GroupItemVo>();
-            for (Integer key : map.keySet()) {
-                list.addAll(map.get(key));
-            }
-            optionGroupVo.setOptions(list);
-            options.add(optionGroupVo);
-        }
-        return options;
-    }
 }

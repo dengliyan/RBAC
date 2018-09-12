@@ -2,9 +2,11 @@ package com.xyz.rbac.service;
 
 import com.xyz.rbac.cache.keys.UserKey;
 import com.xyz.rbac.cache.redis.RedisService;
+import com.xyz.rbac.data.domain.Department;
 import com.xyz.rbac.data.domain.User;
 import com.xyz.rbac.data.mapper.UserMapper;
 import com.xyz.rbac.exception.BusinessException;
+import com.xyz.rbac.result.JSONResult;
 import com.xyz.rbac.result.Result;
 import com.xyz.rbac.util.MD5Util;
 import com.xyz.rbac.util.UUIDUtil;
@@ -26,6 +28,9 @@ public class UserService {
 
     @Autowired
     RedisService redisService;
+
+    @Autowired
+    DepartmentService departmentService;
 
     public User login(HttpServletResponse response, String loginName, String loginPassword) {
         Long loginTimes = redisService.get(UserKey.LOGIN_TIMES, loginName, Long.class);
@@ -76,6 +81,35 @@ public class UserService {
         redisService.set(UserKey.TOKEN, user.getToken(), user);
         return true;
     }
+
+
+    public boolean add(User user) {
+        //判断部门是否正确
+        Department dept = departmentService.get(user.getDeptId());
+        if (dept == null) {
+            throw new BusinessException(Result.ARGUMENTS_ERROR.format("部门不存在"));
+        }
+        User item = userMapper.getByEmail(user.getEmail());
+        if (item != null) {
+            throw new BusinessException(Result.ARGUMENTS_ERROR.format("邮箱已存在"));
+        }
+        item = userMapper.getByMobile(user.getMobile());
+        if (item != null) {
+            throw new BusinessException(Result.ARGUMENTS_ERROR.format("手机号已存在"));
+        }
+        user.setSalt(UUIDUtil.salt(8));
+        user.setPassword(MD5Util.pwd(user.getPassword(), user.getSalt()));
+        return userMapper.add(user) > 0;
+    }
+
+    public User get(Integer id){
+        User user=userMapper.getById(id);
+        if(user==null) {
+            throw new BusinessException(Result.DB_QUERY_NOT_EXISTS);
+        }
+        return user;
+    }
+
     /*
     public boolean updatePassword(Integer dept_id,Integer... user) {
 

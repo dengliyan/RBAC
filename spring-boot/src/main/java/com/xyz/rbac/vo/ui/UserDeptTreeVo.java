@@ -94,7 +94,7 @@ public class UserDeptTreeVo {
                     List<User> users = userMap.get(tree.getId());
                     if (users != null && users.size() > 0) {
                         for (User user : users) {
-                            UserDeptTreeVo c = new UserDeptTreeVo(user.getId(), user.getName(), true);
+                            UserDeptTreeVo c = new UserDeptTreeVo(user.getId(), user.getName()+" ("+user.getEmail()+")", true);
                             vo.setChildren(c);
                         }
                     }

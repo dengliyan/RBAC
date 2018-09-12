@@ -16,8 +16,8 @@ public class LoginNameConstraint implements ConstraintValidator<IsLoginName,Stri
         this.required = context.required();
     }
 
-    public static final Pattern MOBILE_PATTERN = Pattern.compile("^1\\d{10}$");
-    public static final Pattern EMAIL_PATTERN = Pattern.compile("^\\w+(.\\w+)+@\\w+(.\\w+)+$");
+    public static final Pattern MOBILE_PATTERN = Pattern.compile(Regex.MOBILE_PATTERN);
+    public static final Pattern EMAIL_PATTERN = Pattern.compile(Regex.EMAIL_PATTERN);
 
     @Override
     public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
@@ -28,8 +28,10 @@ public class LoginNameConstraint implements ConstraintValidator<IsLoginName,Stri
         if (m.matches()) {
             return true;
         }
+
         m = EMAIL_PATTERN.matcher(s);
         return m.matches();
     }
 
 }
+

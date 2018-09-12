@@ -12,6 +12,10 @@
             :tree="tree.data"
             @sync-dialog="syncDialog2" />
 
+        <v-user-detail-dialog
+            :value="userDetailDialog" 
+            :tree="tree.data" />
+
         <el-tree  
             node-key="id" 
             highlight-current
@@ -29,6 +33,7 @@ export default {
     components:{
         'v-dept-dialog':resolve => require(["./dept.vue"], resolve),
         'v-user-dialog':resolve => require(["./user.vue"], resolve),
+        'v-user-detail-dialog':resolve => require(["./user_detail.vue"], resolve),
     },
     data(){
         return {
@@ -48,7 +53,10 @@ export default {
             userDialog:{
                 show:false,
                 form:{},
-                selected:[]
+            },
+            userDetailDialog:{
+                show:false,
+                form:{},
             }
             
         }
@@ -152,7 +160,22 @@ export default {
             });
         },
         show(data,e){
-            alert(data.name);
+            let that=this;
+            if(data==null||!data.user){
+                return;
+            }
+            that.$api.get('/api/auth/user?id='+data.value).then(response=>{
+                if(response.ret==0){
+                    this.userDetailDialog={show:true,form:{
+                        id:response.data.id,
+                        name:response.data.name,
+                        email:response.data.email,
+                        mobile:response.data.mobile, 
+                        dept:[],
+                        role:[]
+                    }};
+                }
+            });
         }
         ,        
         renderContent(h, { node, data, store }) { 
@@ -172,7 +195,7 @@ export default {
                             <el-button title="添加" size="mini" icon="fa fa-plus-square" circle type="text" on-click={ (e) => this.add(data,e) }  disabled={data.id<0}></el-button>
                             <el-button title="修改" size="mini" icon="fa fa-edit" circle type="text" on-click={ (e) => this.edit(data,e) } disabled={data.id<=0}></el-button>
                             <el-button title="删除" size="mini" icon="fa fa-times-circle" circle  type="text" on-click={ (e) => this.del(node, data,e) } disabled={remove}></el-button>
-                            <el-button title="添加人员" size="mini" icon="fa fa-user-plus " circle  type="text" on-click={ (e) => this.user( data,e) } disabled={data.id<=0}></el-button>
+                            <el-button title="添加人员" size="mini" icon="fa fa-user-plus" circle  type="text" on-click={ (e) => this.user( data,e) } disabled={data.id<=0}></el-button>
                         </el-button-group>
                     </span>
                 </span>);
@@ -200,8 +223,8 @@ export default {
     
     .el-tree-node__content{height: 30px ;line-height: 30px;}
     .el-tree-node__expand-icon + .custom-tree-node span:nth-of-type(1){color: #000}
-    .el-tree-node__expand-icon + .custom-tree-node.tree-user span:nth-of-type(1){color: #2B51AE;font-weight: bold}
-    .el-tree-node__expand-icon + .custom-tree-node span:nth-of-type(2) .fa{font-size: 20px}
+    .el-tree-node__expand-icon + .custom-tree-node.tree-user span:nth-of-type(1){color: #2B51AE;}
+    .el-tree-node__expand-icon + .custom-tree-node span:nth-of-type(2) .fa{font-size: 24px}
     .el-tree-node__expand-icon.expanded + .custom-tree-node .fa-folder:before{content: "\f07c";}
 
     

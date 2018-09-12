@@ -20,12 +20,17 @@ export default new Router({
           name: 'dept',
           component: resolve => require(["@/views/dept/list.vue"], resolve),
         },
+        {
+          path: '/role',
+          name: 'role',
+          component: resolve => require(["@/views/role/list.vue"], resolve),
+        },
       ]
     },  
     {
       path: '/login',
       name: 'login',
-      component: resolve => require(["@/views/user/login.vue"], resolve),
+      component: resolve => require(["@/views/login.vue"], resolve),
     },
     
   ]
