@@ -2,7 +2,7 @@ package com.xyz.rbac.controller;
 
 import com.xyz.rbac.config.LoginRequired;
 import com.xyz.rbac.data.domain.User;
-import com.xyz.rbac.vo.UserVo;
+import com.xyz.rbac.vo.UserLoginVo;
 import com.xyz.rbac.result.JSONResult;
 import com.xyz.rbac.result.Result;
 import com.xyz.rbac.service.UserService;
@@ -24,13 +24,15 @@ public class UserController {
 
     @PostMapping("/login")
     @ResponseBody
-    public JSONResult login(HttpServletResponse response, @Valid UserVo model) {
+    public JSONResult login(HttpServletResponse response, @Valid UserLoginVo model) {
         User user = userService.login(response, model.getName(), model.getPassword());
         if (user != null) {
             return JSONResult.success(user);
         }
         return JSONResult.error(Result.EXCUTE_ERROR);
     }
+
+
 
 
 
@@ -56,5 +58,8 @@ public class UserController {
         }
         return JSONResult.error(Result.EXCUTE_ERROR);
     }
+
+
+
 
 }

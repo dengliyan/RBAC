@@ -40,10 +40,9 @@
 </template>
 
 <script>
-import picker from '@/views/components/date-time-picker.vue'
 export default {
     components:{
-        'v-date-time-picker':picker
+        'v-date-time-picker':resolve => require(["@/components/date-time-picker.vue"], resolve)
     },
     props: {
         propsUIDialog:{

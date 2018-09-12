@@ -6,9 +6,8 @@
             top="0px"
             :close-on-click-modal="false" 
             :close-on-press-escape="false" 
-            width="600px"
-                        >            
-                <el-form   :model="formData" ref="formData" label-width="72px">
+            width="600px">            
+                <el-form :model="formData" ref="formData" label-width="72px">
                     <el-form-item label="部分名称">
                         <el-input placeholder="部分名称" v-model="formData.name"></el-input>
                     </el-form-item>
@@ -24,7 +23,7 @@
                     </el-form-item>
 
                     <el-form-item label="排序">
-                        <v-date-time-picker :propsValue="dateTimePicker" @sync-picker="syncPicker" />
+                        <v-date-time-picker v-model="formData.rank"  />
                     </el-form-item>  
                 </el-form>
                
@@ -37,39 +36,38 @@
 </template>
 
 <script>
-import picker from '@/views/components/date-time-picker.vue'
 export default {
     components:{
-        'v-date-time-picker':picker
+        'v-date-time-picker':resolve => require(["@/components/date-time-picker.vue"], resolve)
+    },
+    mounted() {
+        if(this.value){
+            if(this.value.show!=null&&this.value.show!=undefined){
+                this.UIDialog = this.value.show;
+            }
+            if(this.value.form!=null&&this.value.form!=undefined){
+                this.formData=this.value.form;     
+            }              
+        }
     },
     props: {
-        propsUIDialog:{
-            type:Boolean,
-            default:false
+        value:{
+            type:Object,
+            default:{}
         },
-        propsForm: {
-            type: Object,
-            default: {}
-        },
-        propsTree: {
-            type: Array,
-            default: []
+        tree:{
+            type:Array,
+            default:[]
         }
     },
     watch: {
-        propsUIDialog(val) {
-            this.UIDialog = val;//②监听外部对props属性的变更，并同步到组件内的data属性中                 
+        value(item){                    
+            this.UIDialog = item.show;
+            this.formData=item.form;            
         },
-        UIDialog(val){
+        UIDialog(val){            
             this.$emit('sync-dialog',val);
-        },
-        propsForm(val){            
-            this.formData=val;
-            setTimeout(()=>{this.dateTimePicker=this.formData.rank;},10);
-        }, 
-        propsTree(val){
-            this.tree=val;
-        }       
+        },    
     },
     data(){
         return {
@@ -77,23 +75,18 @@ export default {
             UISubmit:false,
             dateTimePicker:'',
             formData:{
-                id:0,
-                rank:'',
-                name:'',
                 parents:[1]
             },
-            tree:[]
         }
     },
     methods:{
-        submit(){
+        submit(){            
             let that=this;
             let data={}
             for(var g in that.formData){
                 data[g]=that.formData[g];
             }
-            data.pid=data.parents[data.parents.length-1];
-            //如果是添加
+            data.pid=data.parents[data.parents.length-1];            
             if(data.id==0){
                 that.$api.post('/api/auth/dept/add',data).then(response=>{
                     if(response.ret==0){
@@ -116,9 +109,9 @@ export default {
                 });
             }
         },
-        syncPicker(val){
+       /* syncPicker(val){
             this.formData.rank=val;
-        }
+        }*/
     }
 }
 </script>

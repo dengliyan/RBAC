@@ -20,11 +20,6 @@ export default new Router({
           name: 'dept',
           component: resolve => require(["@/views/dept/list.vue"], resolve),
         },
-        {
-          path: '/user',
-          name: 'user',
-          component: resolve => require(["@/views/user/list.vue"], resolve),
-        },
       ]
     },  
     {

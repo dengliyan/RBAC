@@ -3,6 +3,7 @@ package com.xyz.rbac.service;
 import com.xyz.rbac.cache.keys.DepartmentKey;
 import com.xyz.rbac.cache.redis.RedisService;
 import com.xyz.rbac.data.domain.Department;
+import com.xyz.rbac.data.domain.Tree;
 import com.xyz.rbac.data.domain.User;
 import com.xyz.rbac.data.mapper.DepartmentMapper;
 import com.xyz.rbac.exception.BusinessException;
@@ -10,6 +11,8 @@ import com.xyz.rbac.result.Result;
 import com.xyz.rbac.util.TreeUtil;
 import com.xyz.rbac.vo.ui.GroupVo;
 import com.xyz.rbac.vo.ui.GroupItemVo;
+import com.xyz.rbac.vo.ui.TreeVo;
+import com.xyz.rbac.vo.ui.UserDeptTreeVo;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -93,6 +96,41 @@ public class DepartmentService {
     }
 
 
+
+    public List<UserDeptTreeVo> getDeptAndUserTree() {
+        //读取当前部门
+        List<Department> departments = this.fill();
+        //生成部门树
+        List<TreeVo> trees = TreeUtil.tree(departments);
+        //读取所有的用户
+        List<User> users = userService.get();
+        Map<Integer, List<User>> userMap = new HashMap<Integer, List<User>>();
+        for (User user : users) {
+            Integer dept = user.getDeptId();
+            if (!userMap.containsKey(dept)) {
+                userMap.put(dept, new ArrayList<User>());
+            }
+            List<User> values = userMap.get(dept);
+            values.add(user);
+        }
+
+        List<UserDeptTreeVo> list= UserDeptTreeVo.merge(trees, userMap);
+        //判断当前是否存在未处理的
+        if(userMap.keySet()!=null&&userMap.keySet().size()>0) {
+            UserDeptTreeVo vo = new UserDeptTreeVo(-999,"其他部门");
+            for (Integer key:userMap.keySet()) {
+                List<User> values = userMap.get(key);
+                if(values!=null&&values.size()>0){
+                    for (User user:values) {
+                        vo.setChildren(new UserDeptTreeVo(user.getId(), user.getName(), true));
+                    }
+                }
+            }
+            list.add(vo);
+        }
+
+        return list;
+    }
 
     public List<GroupVo> getDeptWithUserByOptionGroup(){
         List<User > users=userService.get();

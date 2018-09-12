@@ -19,7 +19,7 @@ import java.util.List;
 @Controller
 @RequestMapping("/api/auth")
 @ResponseBody
-public class DeptController {
+public class DeptUserController {
 
     @Autowired
     DepartmentService departmentService;
@@ -29,11 +29,11 @@ public class DeptController {
         return JSONResult.success(departmentService.get(id));
     }
 
-    @GetMapping("/dept/tree")
-    public JSONResult tree() {
-        List<Department> lists = departmentService.get();
-        return JSONResult.success(TreeUtil.tree(lists));
-    }
+   @GetMapping("/dept/tree")
+   public JSONResult tree() {
+       List<Department> lists = departmentService.get();
+       return JSONResult.success(TreeUtil.tree(lists));
+   }
 
     @PostMapping("/dept/add")
     public JSONResult add(@RequestParam("name") String name,
@@ -88,8 +88,9 @@ public class DeptController {
         return JSONResult.FAILURE;
     }
 
-    @GetMapping("/dept/user")
-    public JSONResult get( ){
-        return JSONResult.success(departmentService.getDeptWithUserByOptionGroup());
+
+    @GetMapping("/dept/structure")
+    public JSONResult structure( ) {
+        return JSONResult.success(departmentService.getDeptAndUserTree());
     }
 }
