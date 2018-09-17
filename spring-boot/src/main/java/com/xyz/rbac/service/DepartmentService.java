@@ -51,7 +51,7 @@ public class DepartmentService {
     }
 
     public Department get(Integer id) {
-        List<Department> lists = redisService.getList(DepartmentKey.TREE, "", Department.class);
+        List<Department> lists = this.get();
         if (lists != null && lists.size() > 0) {
             for (Department dept :lists) {
                 if(dept.getId()==id){
@@ -128,7 +128,6 @@ public class DepartmentService {
             }
             list.add(vo);
         }
-
         return list;
     }
 

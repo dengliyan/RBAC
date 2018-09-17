@@ -47,10 +47,8 @@ public class DeptUserController {
         department.setName(name);
         department.setParentId(pid);
         department.setRank(rank.getTime());
-        if (departmentService.add(department)) {
-            return JSONResult.SUCCESS;
-        }
-        return JSONResult.FAILURE;
+
+        return JSONResult.result(departmentService.add(department));
     }
 
 
@@ -82,10 +80,7 @@ public class DeptUserController {
 
     @PostMapping("/dept/delete")
     public JSONResult delete(@RequestParam("id") Integer id) {
-        if (departmentService.delete(id, 0)) {
-            return JSONResult.SUCCESS;
-        }
-        return JSONResult.FAILURE;
+        return JSONResult.result(departmentService.delete(id, 0));
     }
 
 

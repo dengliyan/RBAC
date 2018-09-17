@@ -166,14 +166,10 @@ export default {
             }
             that.$api.get('/api/auth/user?id='+data.value).then(response=>{
                 if(response.ret==0){
-                    this.userDetailDialog={show:true,form:{
-                        id:response.data.id,
-                        name:response.data.name,
-                        email:response.data.email,
-                        mobile:response.data.mobile, 
-                        dept:[],
-                        role:[]
-                    }};
+                    let data=response.data;
+                    data.dept=[];
+                    data.role=[];
+                    this.userDetailDialog={show:true,form:data};
                 }
             });
         }
