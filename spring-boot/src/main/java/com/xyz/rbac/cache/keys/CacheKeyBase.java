@@ -23,10 +23,10 @@ public class CacheKeyBase implements CacheKeyPrefix {
 
     @Override
     public String getKey(String key) {
-        if(StringUtils.isEmpty(key)) {
-            return this.getClass().getSimpleName().toLowerCase() + ":" + this.prefix;
+        if (StringUtils.isEmpty(key)) {
+            return "auth:" + this.getClass().getSimpleName().toLowerCase() + ":" + this.prefix;
         }
-        return this.getClass().getSimpleName().toLowerCase() + ":" + this.prefix + ":" + key;
+        return "auth:" + this.getClass().getSimpleName().toLowerCase() + ":" + this.prefix + ":" + key;
     }
 
     @Override
