@@ -76,9 +76,33 @@ public class CategoryService {
         return this.fill();
     }
 
+    public List<Category> getTreeById(Integer id) {
+        List<Category> lists=new ArrayList<Category>();
+        List<Category> categories = this.get();
+        Map<Integer,Category> map=new HashMap<Integer,Category>();
+        if (categories != null && categories.size() > 0) {
+            for (Category c:categories) {
+                map.put(c.getId(),c);
+            }
+        }
+        if(!map.containsKey(id)) {
+            throw new BusinessException(Result.DB_QUERY_NOT_EXISTS);
+        }
+        Category item=map.get(id);
+        lists.add(item);
+        if(item.getParents()!=null) {
+            for (Integer p : item.getParents()) {
+                if(map.containsKey(p)) {
+                    lists.add(map.get(p));
+                }
+            }
+        }
+        return lists;
+    }
+
 
     public Category get(Integer id) {
-        List<Category> lists = redisService.getList(CategoryKey.TREE, "", Category.class);
+        List<Category> lists = this.get();
         if (lists != null && lists.size() > 0) {
             for (Category category: lists) {
                 if(category.getId()==id){

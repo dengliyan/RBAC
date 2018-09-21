@@ -32,7 +32,7 @@
                             style="width:100%"
                         ></el-cascader>
                     </el-form-item>
-                    <el-form-item label="当前角色">
+                    <el-form-item label="角色选择">
                         <el-select v-model="formData.role" multiple placeholder="请选择" style="width:100%">
                             <el-option
                                 v-for="item in role"
@@ -74,6 +74,16 @@ export default {
             default:[]
         },
     },
+    
+    watch: {
+        value(item) {
+            this.UIDialog = item.show;
+            this.formData=item.form;              
+        },
+        UIDialog(val){
+            this.$emit('sync-dialog',val);
+        },
+    },
     mounted(){        
         if(this.value){
             if(this.value.show!=null&&this.value.show!=undefined){
@@ -83,15 +93,6 @@ export default {
                 this.formData=this.value.form;     
             }
         }
-    },
-    watch: {
-        value(item) {
-            this.UIDialog = item.show;
-            this.formData=item.form;              
-        },
-        UIDialog(val){
-            this.$emit('sync-dialog',val);
-        },
     },
     data(){
         return {

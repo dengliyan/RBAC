@@ -25,3 +25,37 @@
 
 .el-collapse-item__header{background-color: #F5F5F5;padding: 0 12px}
 .el-collapse-item__header.is-active{background-color: #EEE;font-weight: bold}
+
+.full-dialog{
+    display:flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height:100vh;
+    .el-dialog__body
+    {
+        flex-grow:1;
+        overflow:hidden;
+        position:relative;
+        .scroll{
+            position: absolute;left: 20px;top: 0;bottom: 0;right: 20px;overflow: auto;
+        }
+    }
+    .el-dialog__footer{padding-top:10px;padding-bottom:10px}
+
+    
+}
+body,#app{margin: 0;padding: 0}
+.layout{
+    display: flex;
+    height: 100vh;
+    flex-direction: column;
+    >div:nth-child(2){
+        flex-grow: 1;
+        padding-top: 8px
+    }
+    .el-menu{
+        position:flex;
+        top: 0
+    }
+}
+

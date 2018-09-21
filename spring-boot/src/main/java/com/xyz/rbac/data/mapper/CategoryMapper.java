@@ -8,11 +8,12 @@ import java.util.List;
 @Mapper
 public interface CategoryMapper {
 
-    @Insert("insert into auth_category(`name`,`description`,`parent_id`,`rank`,`is_valid`) values(#{name},#{description},#{parentId},#{rank},1)")
+    @Insert("insert into auth_category(`name`,`description`,`parent_id`,`rank`,`is_valid`,`path`,`children_only`,`in_menu`,`icon`) values(#{name},#{description},#{parentId},#{rank},1,#{path},#{childrenOnly},#{inMenu},#{icon})")
     @SelectKey(keyColumn = "id", keyProperty = "id", resultType = Integer.class, before = false, statement = "select last_insert_id()")
     public Integer add(Category category);
 
-    @Update("update auth_category set `name`=#{name},`description`=#{description},`parent_id`=#{parentId},`rank`=#{rank},update_date=now(),update_user=0 where id=#{id}")
+
+    @Update("update auth_category set `name`=#{name},`description`=#{description},`parent_id`=#{parentId},`rank`=#{rank},`update_date`=now(),`path`=#{path},`children_only`=#{childrenOnly},`in_menu`=#{inMenu},`icon`=#{icon} where id=#{id}")
     public Integer update(Category category);
 
     @Update("update auth_category a ,(select count(0) cnt from auth_category where parent_id=#{id} and is_valid=1)b set a.is_valid=-1*a.id,a.update_date=now(),a.update_user=#{user} where a.id=#{id} and b.cnt=0")

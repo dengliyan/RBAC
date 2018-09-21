@@ -19,11 +19,8 @@ public class Tree {
     private Integer id;
     private String name;
     private long rank;
-
     private long parentRank;
-
     private Integer parentId;
-
     private List<Integer> parents;
     private List<Integer> childrens;
 

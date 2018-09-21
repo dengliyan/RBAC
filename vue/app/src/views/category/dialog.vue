@@ -6,14 +6,17 @@
             top="0px"
             :close-on-click-modal="false" 
             :close-on-press-escape="false" 
-            width="600px"
-                        >            
+            width="720px">            
                 <el-form   :model="formData" ref="formData" label-width="72px">
                     <el-form-item label="分类名称">
-                        <el-input placeholder="分类名称" v-model="formData.name"></el-input>
+                        <el-input placeholder="分类名称" v-model="formData.name">
+                             <template slot="append">
+                                 <v-icon-picker v-model="formData.icon" />
+                             </template>
+                        </el-input>
                     </el-form-item>
                      <el-form-item label="分类描述">
-                        <el-input type="textarea"  v-model="formData.description" placeholder="分类描述" :autosize="{ minRows: 3}"></el-input>
+                        <el-input type="textarea"  v-model="formData.description" placeholder="分类描述" :autosize="{ minRows: 2}"></el-input>
                     </el-form-item>
                     <el-form-item label="所属分类">
                          <el-cascader
@@ -25,14 +28,23 @@
                             style="width:100%"
                         ></el-cascader>
                     </el-form-item>
+ 
+
+                    <el-form-item label="权限设置">
+                        <div style="display:flex" class="path-div">
+                            <el-input placeholder="路径" v-model="formData.path" style="width:276px"></el-input>
+                            <el-checkbox v-model="formData.childrenOnly">仅对子元素生效</el-checkbox>
+                            <el-checkbox v-model="formData.inMenu">显示在菜单中</el-checkbox>
+                        </div>
+                    </el-form-item>
 
                     <el-form-item label="排序">
-                        <v-date-time-picker :propsValue="dateTimePicker" @sync-picker="syncPicker" />
-                    </el-form-item>  
+                        <v-date-time-picker :value="formData.rank" />
+                    </el-form-item> 
                 </el-form>
                
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="UIDialog=false">取 消</el-button>
+                    <el-button v-if="formData.id>0&&formData.path&&formData.path.length>0" type="text" @click="next">下一步</el-button>
                     <el-button type="primary" @click="submit" :disabled="UISubmit" :loading="UISubmit">{{UISubmit?'提交中...':'确 定'}}</el-button>
                 </span>
             </el-dialog>
@@ -42,14 +54,11 @@
 <script>
 export default {
     components:{
-        'v-date-time-picker':resolve => require(["@/components/date-time-picker.vue"], resolve)
+        'v-date-time-picker':resolve => require(["@/components/date-time-picker.vue"], resolve),
+        'v-icon-picker':resolve => require(["@/components/icon-picker.vue"], resolve)
     },
     props: {
-        propsUIDialog:{
-            type:Boolean,
-            default:false
-        },
-        propsForm: {
+        value: {
             type: Object,
             default: {}
         },
@@ -58,20 +67,27 @@ export default {
             default: []
         }
     },
+    mounted(){
+        if(this.value) {
+            this.UIDialog = this.value.show;
+            this.formData=this.value.form;   
+            this.dateTimePicker=this.formData.rank;
+            //setTimeout(()=>{this.dateTimePicker=this.formData.rank;},10);              
+        };
+        if(this.propsTree){
+            this.tree=this.propsTree;
+        }
+    },
     watch: {
-        propsUIDialog(val) {
-            this.UIDialog = val;//②监听外部对props属性的变更，并同步到组件内的data属性中                 
+        value(val) {
+            this.UIDialog = val.show;
+            this.formData=val.form; 
+            this.dateTimePicker=this.formData.rank;
+            //setTimeout(()=>{this.dateTimePicker=this.formData.rank;},10); 
         },
-        UIDialog(val){
-            this.$emit('sync-dialog',val);
-        },
-        propsForm(val){            
-            this.formData=val;
-            setTimeout(()=>{this.dateTimePicker=this.formData.rank;},10);
-        }, 
         propsTree(val){
             this.tree=val;
-        }       
+        }
     },
     data(){
         return {
@@ -96,13 +112,18 @@ export default {
                 data[g]=that.formData[g];
             }
             data.pid=data.parents[data.parents.length-1];
-            //如果是添加
+            delete data.parents;//删除无用的记录
             if(data.id==0){
                 that.$api.post('/api/auth/category/add',data).then(response=>{
                     if(response.ret==0){
                         that.$message('添加成功');
-                        that.UIDialog=false;
-                        that.$emit('on-add',{response:response.data,form:that.formData});//回调成功事件
+                        that.$emit('on-load',that.formData);//回调成功事件
+                        if(response.data.id>0&&response.data.path&&response.data.path.length>0){
+                            this.$emit('on-next',response.data);            
+                        }
+                        setTimeout(() => {
+                            this.UIDialog=false;
+                        }, 200);
                     }else{
                         that.$message.error(response.msg||'添加失败');
                     }
@@ -110,22 +131,40 @@ export default {
             }else{
                 that.$api.post('/api/auth/category/update',data).then(response=>{
                     if(response.ret==0){
-                        that.$message('修改成功');
-                        that.UIDialog=false;
-                        that.$emit('on-edit',{response:response.data,form:that.formData});//回调成功事件
+                        that.$message('修改成功');                        
+                        that.$emit('on-load',that.formData);//回调成功事件
+                        if(response.data.id>0&&response.data.path&&response.data.path.length>0){
+                            this.$emit('on-next',response.data);            
+                        }
+                        setTimeout(() => {
+                            this.UIDialog=false;
+                        }, 200);
                     }else{
                         that.$message.error(response.msg||'修改失败');
                     }
                 });
             }
         },
-        syncPicker(val){
-            this.formData.rank=val;
+        next(){     
+            this.$emit('on-next',this.formData);
+            setTimeout(() => {
+                this.UIDialog=false;
+            }, 200);
         }
     }
 }
 </script>
 
-<style>
 
+<style lang="less">
+.path-div{
+    display: flex;
+    justify-content:flex-start;
+    .el-input+.el-checkbox{
+        margin-left: 6px
+    }
+    .el-checkbox+.el-checkbox{
+        margin-left: 6px
+    }
+}
 </style>

@@ -1,47 +1,46 @@
 <template>
     <div id="category-tree">
         <v-dialog 
-                   :propsUIDialog="props.dialog.show"
-                   :propsForm="formData"
+                   :value="categoryForm"
                    :propsTree="tree"
-                   @sync-dialog="syncDialog"
-                   @on-add="afterAdd"
-                   @on-edit="afterEdit" />
+                   @on-load="after"
+                   @on-next="next" />
+        <v-permission-dialog :value="permissionDialog" />
         <el-tree 
             v-if="tree!=null" 
             node-key="id" 
             highlight-current
             :data="tree" 
             :default-expanded-keys="props.tree.keys" 
-            :props="props.tree.defaultProps" 
+            :props="{children: 'childrens',label: 'name'}" 
             :expand-on-click-node="false"
             :render-content="renderContent"	 />
     </div>
 </template>
 
 <script>
-import dialog from './dialog.vue'   
 import util from '@/config/date-util.js'
 export default {
     components:{
-        'v-dialog':dialog
+        'v-dialog':resolve => require(["./dialog.vue"], resolve),
+        'v-permission-dialog':resolve => require(["./permission-dialog.vue"], resolve),
     },
     data(){
         return {
             tree:null,
+            categoryForm:{
+                show:false,
+                form:{}
+            },
+            permissionDialog:{
+                show:false,
+                form:{}
+            },
             props:{
                 tree:{
-                    keys:[1],
-                    defaultProps:{
-                        children: 'childrens',
-                        label: 'name'
-                    }
-                },
-                dialog:{
-                    show:false
+                    keys:[0],
                 }
             },
-            formData:{}
         }
     },
     mounted(){
@@ -52,7 +51,7 @@ export default {
             let that=this;
             that.$api.get('/api/auth/category/tree').then(response=>{
                 if(response.ret==0){
-                    that.tree=response.data;  
+                    that.tree=[{id:0,name:'全部模块',parent:-1,childrens:response.data}];  
                     callback&&callback();
                 }else{
                     that.message.error('读取失败，请重试。')
@@ -60,14 +59,13 @@ export default {
             });
         },
         renderContent(h, { node, data, store }) {        
-            let edit=data.id==1;
+            let edit=data.id==0;
             let remove=(data.id==0)||(data.childrens!=null&&data.childrens.length>0);
             return (
             <span class="custom-tree-node">
-                <span>{node.label}({data.id})</span>
+                <span><i class={node.icon}></i>{node.label}({data.id})</span>
                 <span>
                     <el-button-group> 
-                        <el-button size="mini" icon="fa  fa-cog" circle type="text" on-click={ () => this.add(data) } disabled={data.id==1}></el-button>
                         <el-button size="mini" icon="fa fa-plus-square" circle type="text" on-click={ () => this.add(data) }></el-button>
                         <el-button size="mini" icon="fa fa-edit" circle type="text" on-click={ () => this.edit(data) } disabled={edit}></el-button>
                         <el-button size="mini" icon="fa fa-times-circle" circle  type="text" on-click={ () => this.del(node, data) } disabled={remove}></el-button>
@@ -75,26 +73,42 @@ export default {
                 </span>
             </span>);
         },
-        syncDialog(val){
-            this.props.dialog.show=val;
-        },
         //添加
         add(data){
             let that=this;
+            if(data.id==0){
+                that.categoryForm={show:true,form:{
+                    id:0,
+                    name:'',
+                    description:'',
+                    parents:[0],
+                    rank:util.now("yyyy-MM-dd")+" "+"00:00:00",
+                    childrenOnly:false,
+                    inMenu:false
+                }};
+                return;
+            }
             that.$api.get('/api/auth/category?id='+data.id).then(response=>{
                 if(response.ret==0){
                     let parents=([response.data.id].concat(response.data.parents||[]));//拼接
+                    parents.push(0);//添加顶级
                     parents.reverse();//反转 
-                    that.props.dialog.show=true;
-                    that.formData={id:0,name:'',description:'',parents:parents,rank:util.now("yyyy-MM-dd")+" "+"00:00:00"};
+                    that.categoryForm={show:true,form:{
+                        id:0,
+                        name:'',
+                        description:'',
+                        parents:parents,rank:util.now("yyyy-MM-dd")+" "+"00:00:00",
+                        childrenOnly:false,
+                        inMenu:false
+                    }};
                 }
             });
             
         },
-        afterAdd(param){
+        after(param){
             let that=this;
             this.getData(function () {
-               that.props.tree.keys=param.form.parents;//展开
+               that.props.tree.keys=param.parents;//展开
             });
         },
         edit(data){ 
@@ -103,16 +117,13 @@ export default {
                 if(response.ret==0){
                     let item=response.data;
                     let parents=item.parents||[];//拼接
+                    parents.push(0);//添加顶级
                     parents.reverse();//反转 
-                    that.props.dialog.show=true;
-                    that.formData={id:item.id,name:item.name,description:item.description,parents:parents,rank:util.format(new Date(item.rank),'yyyy-MM-dd hh:mm:ss')};
+                    let data=response.data;
+                    data.parents=parents;
+                    data.rank=util.format(new Date(data.rank),'yyyy-MM-dd hh:mm:ss');
+                    that.categoryForm={show:true,form:data};
                 }
-            });
-        },
-        afterEdit(param){
-            let that=this;
-            this.getData(function () {
-               that.props.tree.keys=param.form.parents;//展开
             });
         },
         del(node, data){
@@ -131,6 +142,17 @@ export default {
             }).catch(() => {
 
             });
+        },
+        next(data){
+            let that=this;
+            that.$api.get('/api/auth/category/permission',{category:data.id}).then(response=>{
+                if(response.ret==0){
+                    this.permissionDialog={show:true,form:data,data:response.data};
+                }else{
+                   that.$message.error(response.msg||'读取失败');
+                }
+            });
+            
         }
     },
 }
@@ -148,10 +170,21 @@ export default {
     }
     .custom-tree-node span:nth-of-type(2) {
         display: none;
+        width: 50%;
+        text-align: right;
+        justify-content:flex-end
     }
-    .custom-tree-node:hover span:nth-of-type(2) {
+    
+    .el-tree-node__content{height: 30px ;line-height: 30px;}
+    .el-tree-node__expand-icon + .custom-tree-node span:nth-of-type(1){color: #000}
+    .el-tree-node__expand-icon + .custom-tree-node.tree-user span:nth-of-type(1){color: #2B51AE;}
+    .el-tree-node__expand-icon + .custom-tree-node span:nth-of-type(2) .fa{font-size: 24px}
+    .el-tree-node__expand-icon.expanded + .custom-tree-node .fa-folder:before{content: "\f07c";}
+
+    .custom-tree-node:hover span:nth-of-type(2),
+    .el-tree-node.is-current >.el-tree-node__content .custom-tree-node span:nth-of-type(2) {
         display: flex;
+        
     }
-    .el-tree-node__content{height: 32px ;line-height: 32px}
 }
 </style>

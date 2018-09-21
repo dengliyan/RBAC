@@ -11,4 +11,14 @@ import java.util.List;
 public class Category extends Tree {
 
     private String description;
+
+    private String icon;
+
+    private String path;
+
+    private boolean childrenOnly;
+
+    private boolean inMenu;
+
+
 }

@@ -23,7 +23,6 @@ public class TreeUtil {
             HashSet<Integer> hash = new HashSet<Integer>();
             //找到元素
             boolean setParent = true;
-
             while (parentId != 0 && map.containsKey(parentId) && map.containsKey(id) && !hash.contains(parentId)) {
                 Tree item = map.get(parentId);
                 tree.addParents(item.getId()); //添加父

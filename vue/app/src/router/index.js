@@ -11,17 +11,17 @@ export default new Router({
       component: resolve => require(["@/views/layout.vue"], resolve),
       children:[
         {
-          path: '/category',
+          path: '/system/category',
           name: 'category',
           component: resolve => require(["@/views/category/list.vue"], resolve),
         },
         {
-          path: '/dept',
+          path: '/system/dept',
           name: 'dept',
           component: resolve => require(["@/views/dept/list.vue"], resolve),
         },
         {
-          path: '/role',
+          path: '/system/role',
           name: 'role',
           component: resolve => require(["@/views/role/list.vue"], resolve),
         },
